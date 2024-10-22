@@ -1,0 +1,178 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+  <!-- content -->
+  <section class="py-5">
+    <div class="container">
+      <div class="row gx-5">
+        <aside class="col-lg-6">
+          <div class="border rounded-4 mb-3 d-flex justify-content-center">
+              <img style="max-width: 100%; max-height: 100vh; margin: auto;" class="rounded-4 fit" src="{{ listing.image.url }}" />
+            </a>
+          </div>
+         
+          <!-- thumbs-wrap.// -->
+          <!-- gallery-wrap .end// -->
+        </aside>
+        <main class="col-lg-6">
+          <div class="ps-lg-3">
+            <h4 class="title text-dark">
+                {{ listing.title }}
+            </h4>
+            <div class="d-flex flex-row my-3">
+              <div class="text-warning mb-1 me-2">
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+                {% comment %} <span class="ms-1">
+                  4.5
+                </span> {% endcomment %}
+              </div>
+            </div>
+  
+            <div class="mb-3">
+              <span class="h5">Initial price at ${{ listing.initial_price }}</span>
+              <span class="text-muted">/per unit</span>
+            </div>
+
+            <div class="mb-3">
+                <span class="h5">Current price at ${{ listing.current_price }}</span>
+                <span class="text-muted">/per unit</span>
+              </div>
+  
+            <p>
+                {{ listing.description }}
+            </p>
+  
+            <div class="row">
+              <dt class="col-3">Category: </dt>
+              <dd class="col-9">{{ listing.category }}</dd>
+
+            </div>
+  
+            <hr />
+  
+            <div class="row mb-4">
+              <!-- col.// -->
+              <div class="col-md-4 col-6 mb-3">
+                <!-- <label class="mb-2 d-block">Bid</label> -->
+                <div class="input-group mb-3" style="width: 170px;">
+                  {% if listing.active %}
+                    {% if is_owner %}
+                    <form action="{% url 'closeAuction' id=listing.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Close auction</button>
+                      </form>
+                    {% else %}
+                    <form action="{% url 'update_price' auction_id=listing.id %}" method="post">
+                      {% csrf_token %}
+                      {{ form.current_price }}
+                      <button type="submit" class="btn btn-primary">Bid</button>
+                  </form>
+                  {% if in_watch %}
+                  <form action="{% url 'watchlist' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary" disabled >Already in Watchlist</button>
+                </form>
+                  {% else %}
+                  <form action="{% url 'watchlist_add' auction_id=listing.id  %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Add to Watchlist</button>
+                </form>
+                  {% endif %}
+                    {% endif %}
+                  {% else %}
+                  <h2>{{ msg }}
+                  </h2>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <!-- <a href="#" class="btn btn-warning shadow-0"> Buy now </a>
+            <a href="#" class="btn btn-primary shadow-0"> <i class="me-1 fa fa-shopping-basket"></i> Add to cart </a>
+            <a href="#" class="btn btn-light border border-secondary py-2 icon-hover px-3"> <i class="me-1 fa fa-heart fa-lg"></i> Save </a> -->
+          </div>
+        </main>
+      </div>
+    </div>
+  </section>
+  <!-- content -->
+  
+  <section class="bg-light border-top py-4">
+    <div class="container">
+      <div class="row gx-4">
+        <div class="col-lg-8 mb-4">
+          <div class="border rounded-2 px-3 py-2 bg-white">
+            <!-- Pills navs -->
+            <ul class="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
+              <li class="nav-item d-flex" role="presentation">
+                <a class="nav-link d-flex align-items-center justify-content-center w-100 active" >Comments</a>
+              </li>
+            </ul>
+            
+
+            <div class="card">
+                <div class="card-body">
+                    {% for c in comments %}
+                    <div class="d-flex flex-start align-items-center mb-3">
+                        <img class="rounded-circle shadow-1-strong me-3" src="https://ui-avatars.com/api/?name={{ c.user.username }}" alt="avatar" width="60" height="60" />
+                        <div>
+                            <h6 class="fw-bold text-primary mb-1">{{ c.user.username }}</h6>
+                            <p class="text-muted small mb-0">Shared comment - {{ c.created_at }}</p>
+                        </div>
+                    </div>
+                    <p class="mt-3 mb-4 pb-2">{{ c.content }}</p>
+                    {% endfor %}
+                </div>
+                <div class="card-footer py-3 border-0" style="background-color: #f8f9fa;">
+                    <form action="{% url 'comment' id=listing.id  %}" method="post" class="d-flex align-items-start w-100">
+                        {% csrf_token %}
+                        <img class="rounded-circle shadow-1-strong me-3" src="https://ui-avatars.com/api/?name={{ user.username }}" alt="avatar" width="40" height="40" />
+                        <div class="form-outline flex-grow-1 mb-0">
+                            <textarea name="content" class="form-control" id="textAreaExample" rows="8" style="background: #fff; width: 100%;"></textarea>
+                        </div>
+                        <br/>
+                        <br/>
+                        <div class="ms-3">
+                            <button type="submit" class="btn btn-primary btn-sm">Post comment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+
+
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="px-0 border rounded-2 shadow-0">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Similar items</h5>
+                {% for item in similar %}
+                <div class="d-flex mb-3">
+                  <a href="{% url 'listing_details' id=item.id %}" class="me-3">
+                    <img src="{{ item.image.url }}" style="min-width: 96px; height: 96px;" class="img-md img-thumbnail" />
+                  </a>
+                  <div class="info">
+                    <a href="{% url 'listing_details' id=item.id %}" class="nav-link mb-1">
+                      {{ item.title }}
+                    </a>
+                    <strong class="text-dark"> Price:  {{ item.current_price }}$</strong>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+  
+{% endblock %}

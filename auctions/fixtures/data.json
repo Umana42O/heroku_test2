@@ -1,0 +1,30 @@
+[
+    {
+        "model": "auctions.Category",
+        "pk": 1,
+        "fields": {
+          "name": "Videojuegos"
+        }
+      },
+      {
+        "model": "auctions.Category",
+        "pk": 2,
+        "fields": {
+          "name": "Utileria"
+        }
+      },
+      {
+        "model": "auctions.Category",
+        "pk": 3,
+        "fields": {
+          "name": "Muebles"
+        }
+      },
+      {
+        "model": "auctions.Category",
+        "pk": 4,
+        "fields": {
+          "name": "Electrodomesticos"
+        }
+      }
+  ]
